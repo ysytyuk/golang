@@ -12,7 +12,6 @@ import (
 func main() {
 
 	address := os.Args[1]
-	// port := os.Args[2]
 	metricName := os.Args[2]
 	metricNum, _ := strconv.Atoi(os.Args[3])
 	runTime, _ := strconv.Atoi(os.Args[4])
@@ -24,29 +23,33 @@ func main() {
 }
 
 func sendMetrics(address string, metricName string, metricNum int, timeout int64) {
-	tcpAddr, err := net.ResolveTCPAddr("tcp", address)
+
+	udpAddr, err := net.ResolveUDPAddr("udp", address)
 	if err != nil {
-		println("ResolveTCPAddr failed:", err.Error())
+		println("ResolveUDPAddr failed:", err.Error())
 		os.Exit(1)
 	}
 
-	conn, err := net.DialTCP("tcp", nil, tcpAddr)
+	conn, err := net.DialUDP("udp", nil, udpAddr)
 	if err != nil {
 		println("Dial failed:", err.Error())
 		os.Exit(1)
 	}
 	defer conn.Close()
-	// conn.Write()
+
 	w := bufio.NewWriter(conn)
+	// fmt.Fprint(w, "Hello, ")
+
 	for time.Now().Unix() <= timeout {
 		for i := 0; i <= metricNum; i++ {
-			fmt.Fprintf(w, "%s.%s.counter:1|c\n", metricName, i)
-			// fmt.Println(i)
+			fmt.Fprintf(w, "%s--%s.count:%d|c\n", "proba", metricName, 1)
+			w.Flush()
 		}
 	}
 
 	// fmt.Printf("%T", port)
-	fmt.Println(tcpAddr)
+	fmt.Println(udpAddr)
+	// fmt.Println(conn)
 	// fmt.Println(metricNum)
 	// fmt.Println(metricName)
 	// fmt.Println(now)
