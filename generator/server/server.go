@@ -19,7 +19,6 @@ func main() {
 	ServerAddr, err := net.ResolveUDPAddr("udp", "localhost:8125")
 	CheckServerError(err)
 	ServerConn, err := net.ListenUDP("udp", ServerAddr)
-	// ServerConn, err := net.Listener("udp", ServerAddr)
 	CheckServerError(err)
 
 	defer ServerConn.Close()
@@ -28,7 +27,7 @@ func main() {
 
 	for {
 		n, addr, err := ServerConn.ReadFromUDP(buf)
-		fmt.Printf("Received message: %s from  %s\n", string(buf[0:n]), addr)
+		fmt.Printf("Received message: %s from %s\n", string(buf[0:n-1]), addr)
 		CheckServerError(err)
 	}
 
